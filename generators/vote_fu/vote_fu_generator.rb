@@ -1,8 +1,10 @@
-class VoteFuGenerator < Rails::Generator::Base 
+class VoteFuGenerator < Rails::Generator::Base
 
-  def manifest 
-    record do |m| 
+  def manifest
+    record do |m|
       m.migration_template 'migration.rb', 'db/migrate', :migration_file_name => 'vote_fu_migration'
-    end 
+      m.directory File.join('app', 'models')
+      m.template 'vote.rb', File.join('app', 'models', 'vote.rb')
+    end
   end
 end

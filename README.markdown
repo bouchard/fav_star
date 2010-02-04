@@ -20,7 +20,7 @@ This plugin started as an adaptation / update of act\_as\_voteable. It has grown
 4. Introduces some newer Rails features like named\_scope and :polymorphic keywords
 5. Adds "has\_karma" mixin for identifying key content contributors
 
-### Diference between original vote_fu and our gem
+### Difference between original vote_fu and our gem
 
 Generator creates model vote.rb in you application instead of keeping it in the gem lib.
 We had bad experience with extending this class in application - unexpected things where having place.

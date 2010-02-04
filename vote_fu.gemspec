@@ -1,5 +1,5 @@
 Gem::Specification.new do |s|
-  s.name = "vote_fu"
+  s.name = "objectreload-vote_fu"
   s.version = "0.0.11"
   s.date = "2009-02-11"
   s.summary = "Voting for ActiveRecord with multiple vote sources and advanced features."
@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
               "examples/voteable.html.erb",
               "examples/votes/_voteable_vote.html.erb",
               "examples/votes/create.rjs",
-              "examples/routes.rb", 
+              "examples/routes.rb",
               "rails/init.rb"
   ]
 end

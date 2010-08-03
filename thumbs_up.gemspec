@@ -5,12 +5,12 @@
 
 Gem::Specification.new do |s|
   s.name = %q{thumbs_up}
-  s.version = "0.2.0"
+  s.version = "0.2.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Peter Jackson", "Cosmin Radoi", "Bence Nagy", "Rob Maddox", "Wojciech Wn\304\231trzak", "Brady Bouchard"]
-  s.date = %q{2010-08-03}
-  s.description = %q{ThumbsUp provides the ability to have multiple voting entities on an arbitrary number of models in ActiveRecord.}
+  s.authors = ["Brady Bouchard", "Peter Jackson", "Cosmin Radoi", "Bence Nagy", "Rob Maddox", "Wojciech Wn\304\231trzak"]
+  s.date = %q{2010-08-04}
+  s.description = %q{ThumbsUp provides dead-simple voting capabilities to ActiveRecord models with karma calculation, a la stackoverflow.com.}
   s.email = %q{brady@ldawn.com}
   s.extra_rdoc_files = [
     "README.markdown"
@@ -21,20 +21,21 @@ Gem::Specification.new do |s|
      "README.markdown",
      "Rakefile",
      "VERSION",
-     "generators/thumbs_up/templates/migration.rb",
-     "generators/thumbs_up/thumbs_up_generator.rb",
-     "lib/active_record/vote.rb",
      "lib/acts_as_voteable.rb",
      "lib/acts_as_voter.rb",
+     "lib/generators/thumbs_up/templates/migration.rb",
+     "lib/generators/thumbs_up/templates/vote.rb",
+     "lib/generators/thumbs_up/thumbs_up_generator.rb",
      "lib/has_karma.rb",
      "lib/thumbs_up.rb",
-     "rails/init.rb"
+     "rails/init.rb",
+     "thumbs_up.gemspec"
   ]
   s.homepage = %q{http://github.com/brady8/thumbs_up}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
-  s.summary = %q{Voting for ActiveRecord with multiple vote sources and advanced features.}
+  s.summary = %q{Voting for ActiveRecord with multiple vote sources and karma calculation.}
 
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION

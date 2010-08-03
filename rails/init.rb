@@ -1,4 +1,4 @@
-RAILS_DEFAULT_LOGGER.info "** vote_fu: setting up load paths"
+RAILS_DEFAULT_LOGGER.info "** thumbs_up: setting up load paths **"
 
 %w{ models controllers helpers }.each do |dir|
   path = File.join(File.dirname(__FILE__) , 'lib', dir)
@@ -7,4 +7,4 @@ RAILS_DEFAULT_LOGGER.info "** vote_fu: setting up load paths"
   ActiveSupport::Dependencies.load_once_paths.delete(path)
 end
 
-require 'vote_fu'
+require 'thumbs_up'

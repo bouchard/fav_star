@@ -57,10 +57,9 @@ module ThumbsUp
         Vote.where(:voteable_id => id, :voteable_type => self.class.name, :vote => false).count
       end
 
-      # The difference between votes for and votes against for this particular instance.
-      # Note, this is different than the class method, which instead returns all votes
-      # for a particular voteable_type.
-      def tally
+      # You'll probably want to use this method to display how 'good' a particular voteable
+      # is, and/or sort based on it.
+      def plusminus
         votes_for - votes_against
       end
 

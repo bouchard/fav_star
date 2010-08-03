@@ -1,13 +1,15 @@
 ThumbsUp
 =======
 
+A ridiculously straightforward and simple package 'o' code to enable voting in your application, a la stackoverflow.com, etc.
 Allows an arbitrary number of entities (users, etc.) to vote on models.
 
 ### Mixins
-This plugin introduces two mixins to your recipe book:
+This plugin introduces three mixins to your recipe book:
 
 1. **acts\_as\_voteable** : Intended for content objects like Posts, Comments, etc.
 2. **acts\_as\_voter** : Intended for voting entities, like Users.
+3. **has\_karma** : Adds some helpers to acts\_as\_voter models for calculating karma.
 
 ### Inspiration
 
@@ -30,9 +32,13 @@ Usage
 
 ## Getting Started
 
-### Turn your AR model into something that can be voted upon.
+### Turn your AR models into something that can be voted upon.
 
-    class Model < ActiveRecord::Base
+    class SomeModel < ActiveRecord::Base
+      acts_as_voteable
+    end
+
+    class Question < ActiveRecord::Base
       acts_as_voteable
     end
 
@@ -40,6 +46,10 @@ Usage
 
     class User < ActiveRecord::Base
       acts_as_voter
+      # The following line is optional, and tracks karma (up votes) for questions this user has submitted.
+      # Each question has a submitter_id column that tracks the user who submitted it.
+      # You can track any voteable model.
+      has_karma(:questions, :as => :submitter)
     end
 
     class Robot < ActiveRecord::Base
@@ -85,23 +95,16 @@ This will select the Items with between 1 and 10,000 votes, the votes having bee
     :at_most     - Item may not have more than X votes
 
 #### Lower level queries
-ActiveRecord models that act as voteable can be queried for the positive votes, negative votes, and a total vote count by using the votes\_for, votes\_against, and votes\_count methods respectively. Here is an example:
 
-    positiveVoteCount = m.votes_for
-    negativeVoteCount = m.votes_against
-    totalVoteCount    = m.votes_count
+    positiveVoteCount = voteable.votes_for
+    negativeVoteCount = voteable.votes_against
+    plusminus         = voteable.plusminus  # Votes for minus votes against.
 
-And because the Vote Fu plugin will add the has_many votes relationship to your model you can always get all the votes by using the votes property:
+	voter.voted_for?(voteable) # True if the voter voted for this object.
+	voter.vote_count(:up | :down | :all) # returns the count of +1, -1, or all votes
 
-    allVotes = m.votes
-
-The mixin also provides these methods:
-
-  voter.voted_for?(voteable)  # True if the voter voted for this object.
-  voter.vote_count(:up | :down | :all) # returns the count of +1, -1, or all votes
-
-  voteable.voted_by?(voter) # True if the voter voted for this object.
-  @voters = voteable.voters_who_voted
+	voteable.voted_by?(voter) # True if the voter voted for this object.
+	@voters = voteable.voters_who_voted
 
 
 ### One vote per user!
@@ -120,4 +123,4 @@ ThumbsUp by default only allows one vote per user. This can be changed by removi
 Credits
 =======
 
-Basic structure and a good chunk of code is taken from Peter Jackson's work on ActsAsVoteable.
+Basic scaffold is from Peter Jackson's work on VoteFu / ActsAsVoteable. All code updated for Rails 3, cleaned up for speed and clarity, karma calculation fixed, and (hopefully) zero introduced bugs.

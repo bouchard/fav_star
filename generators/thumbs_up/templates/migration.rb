@@ -1,10 +1,10 @@
-class VoteFuMigration < ActiveRecord::Migration
+class ThumbsUpMigration < ActiveRecord::Migration
   def self.up
     create_table :votes, :force => true do |t|
       t.boolean    :vote, :default => false
       t.references :voteable, :polymorphic => true, :null => false
       t.references :voter,    :polymorphic => true
-      t.timestamps      
+      t.timestamps
     end
 
     add_index :votes, ["voter_id", "voter_type"],       :name => "fk_voters"

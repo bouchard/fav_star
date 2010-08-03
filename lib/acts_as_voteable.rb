@@ -1,114 +1,86 @@
-# ActsAsVoteable
-module Juixe
-  module Acts #:nodoc:
-    module Voteable #:nodoc:
+module ThumbsUp
+  module ActsAsVoteable #:nodoc:
 
-      def self.included(base)
-        base.extend ClassMethods
+    def self.included(base)
+      base.extend ClassMethods
+    end
+
+    module ClassMethods
+      def acts_as_voteable
+        has_many :votes, :as => :voteable, :dependent => :nullify
+
+        include ThumbsUp::ActsAsVoteable::InstanceMethods
+        extend  ThumbsUp::ActsAsVoteable::SingletonMethods
+      end
+    end
+
+    module SingletonMethods
+
+      # Calculate the vote counts for all voteables of my type.
+      # This method returns all voteables with at least one vote.
+      # The vote count for each voteable is available as #vote_count.
+      #
+      # Options:
+      #  :start_at    - Restrict the votes to those created after a certain time
+      #  :end_at      - Restrict the votes to those created before a certain time
+      #  :conditions  - A piece of SQL conditions to add to the query
+      #  :limit       - The maximum number of voteables to return
+      #  :order       - A piece of SQL to order by. Eg 'vote_count DESC' or 'voteable.created_at DESC'
+      #  :at_least    - Item must have at least X votes
+      #  :at_most     - Item may not have more than X votes
+      def tally(*args)
+        options = args.extract_options!
+        t = self.where("#{Vote.table_name}.voteable_type = '#{self.name}'")
+        # We join so that you can order by columns on the voteable model.
+        t = t.joins("LEFT OUTER JOIN #{Vote.table_name} ON #{self.table_name}.#{self.primary_key} = #{Vote.table_name}.voteable_id")
+        t = t.having("vote_count > 0")
+        t = t.group("#{Vote.table_name}.voteable_id")
+        t = t.limit(options[:limit]) if options[:limit]
+        t = t.where("#{Vote.table_name}.created_at >= ?", options[:start_at]) if options[:start_at]
+        t = t.where("#{Vote.table_name}.created_at <= ?", options[:end_at]) if options[:end_at]
+        t = t.where(options[:conditions]) if options[:conditions]
+        t = options[:order] ? t.order(options[:order]) : t.order("vote_count DESC")
+        t = t.having(["vote_count >= ?", options[:at_least]]) if options[:at_least]
+        t = t.having(["vote_count <= ?", options[:at_most]]) if options[:at_most]
+        t.select("#{self.table_name}.*, COUNT(#{Vote.table_name}.voteable_id) AS vote_count")
       end
 
-      module ClassMethods
-        def acts_as_voteable
-          has_many :votes, :as => :voteable, :dependent => :nullify
+    end
 
-          include Juixe::Acts::Voteable::InstanceMethods
-          extend  Juixe::Acts::Voteable::SingletonMethods
-        end        
+    module InstanceMethods
+
+      def votes_for
+        Vote.where(:voteable_id => id, :voteable_type => self.class.name, :vote => true).count
       end
-      
-      # This module contains class methods
-      module SingletonMethods
-        
-        # Calculate the vote counts for all voteables of my type.
-        def tally(options = {})
-          find(:all, options_for_tally(options.merge({:order =>"count DESC" })))
-        end
 
-        # 
-        # Options:
-        #  :start_at    - Restrict the votes to those created after a certain time
-        #  :end_at      - Restrict the votes to those created before a certain time
-        #  :conditions  - A piece of SQL conditions to add to the query
-        #  :limit       - The maximum number of voteables to return
-        #  :order       - A piece of SQL to order by. Eg 'votes.count desc' or 'voteable.created_at desc'
-        #  :at_least    - Item must have at least X votes
-        #  :at_most     - Item may not have more than X votes
-        def options_for_tally (options = {})
-            options.assert_valid_keys :start_at, :end_at, :conditions, :at_least, :at_most, :order, :limit
-
-            scope = scope(:find)
-            start_at = sanitize_sql(["#{Vote.table_name}.created_at >= ?", options.delete(:start_at)]) if options[:start_at]
-            end_at = sanitize_sql(["#{Vote.table_name}.created_at <= ?", options.delete(:end_at)]) if options[:end_at]
-
-            type_and_context = "#{Vote.table_name}.voteable_type = #{quote_value(base_class.name)}"
-
-            conditions = [
-              type_and_context,
-              options[:conditions],
-              start_at,
-              end_at
-            ]
-
-            conditions = conditions.compact.join(' AND ')
-            conditions = merge_conditions(conditions, scope[:conditions]) if scope
-
-            joins = ["LEFT OUTER JOIN #{Vote.table_name} ON #{table_name}.#{primary_key} = #{Vote.table_name}.voteable_id"]
-            joins << scope[:joins] if scope && scope[:joins]
-            at_least  = sanitize_sql(["COUNT(#{Vote.table_name}.id) >= ?", options.delete(:at_least)]) if options[:at_least]
-            at_most   = sanitize_sql(["COUNT(#{Vote.table_name}.id) <= ?", options.delete(:at_most)]) if options[:at_most]
-            having    = [at_least, at_most].compact.join(' AND ')
-            group_by  = "#{Vote.table_name}.voteable_id HAVING COUNT(#{Vote.table_name}.id) > 0"
-            group_by << " AND #{having}" unless having.blank?
-
-            { :select     => "#{table_name}.*, COUNT(#{Vote.table_name}.id) AS count", 
-              :joins      => joins.join(" "),
-              :conditions => conditions,
-              :group      => group_by
-            }.update(options)          
-        end
+      def votes_against
+        Vote.where(:voteable_id => id, :voteable_type => self.class.name, :vote => false).count
       end
-      
-      # This module contains instance methods
-      module InstanceMethods
-        def votes_for
-          Vote.count(:all, :conditions => [
-            "voteable_id = ? AND voteable_type = ? AND vote = ?",
-            id, self.class.name, true
-          ])
-        end
-        
-        def votes_against
-          Vote.count(:all, :conditions => [
-            "voteable_id = ? AND voteable_type = ? AND vote = ?",
-            id, self.class.name, false
-          ])
-        end
-        
-        # Same as voteable.votes.size
-        def votes_count
-          self.votes.size
-        end
-        
-        def voters_who_voted
-          voters = []
-          self.votes.each { |v|
-            voters << v.voter
-          }
-          voters
-        end
-        
-        def voted_by?(voter)
-          rtn = false
-          if voter
-            self.votes.each { |v|
-              rtn = true if (voter.id == v.voter_id && voter.class.name == v.voter_type)
-            }
-          end
-          rtn
-        end
-        
-        
+
+      # The difference between votes for and votes against for this particular instance.
+      # Note, this is different than the class method, which instead returns all votes
+      # for a particular voteable_type.
+      def tally
+        votes_for - votes_against
       end
+
+      def votes_count
+        self.votes.size
+      end
+
+      def voters_who_voted
+        self.votes.map(&:voter).uniq
+      end
+
+      def voted_by?(voter)
+        0 < Vote.where(
+              :voteable_id => self.id,
+              :voteable_type => self.class.name,
+              :voter_type => voter.class.name,
+              :voter_id => voter.id
+            ).count
+      end
+
     end
   end
 end

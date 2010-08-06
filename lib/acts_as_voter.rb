@@ -57,15 +57,33 @@ module ThumbsUp #:nodoc:
       end
 
       def vote_for(voteable)
-        self.vote(voteable, true)
+        self.vote(voteable, { :direction => :up, :exclusive => false })
       end
 
       def vote_against(voteable)
-        self.vote(voteable, false)
+        self.vote(voteable, { :direction => :down, :exclusive => false })
       end
 
-      def vote(voteable, vote)
-        Vote.create!(:vote => vote, :voteable => voteable, :voter => self)
+      def vote_exclusively_for(voteable)
+        self.vote(voteable, { :direction => :up, :exclusive => true })
+      end
+
+      def vote_exclusively_against(voteable)
+        self.vote(voteable, { :direction => :down, :exclusive => true })
+      end
+
+      def vote(voteable, options = {})
+        raise ArgumentError "you must specify :up or :down in order to vote" unless options[:direction] && [:up, :down].include?(options[:direction].to_sym)
+        if options[:exclusive]
+          Vote.where(
+            :voter_id => self.id,
+            :voter_type => self.class.name,
+            :voteable_id => voteable.id,
+            :voteable_type => voteable.class.name
+          ).map(&:destroy)
+        end
+        direction = (options[:direction].to_sym == :up ? true : false)
+        Vote.create!(:vote => direction, :voteable => voteable, :voter => self)
       end
 
       def voted_which_way?(voteable, direction)

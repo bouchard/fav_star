@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{thumbs_up}
-  s.version = "0.2.1"
+  s.version = "0.2.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Brady Bouchard", "Peter Jackson", "Cosmin Radoi", "Bence Nagy", "Rob Maddox", "Wojciech Wn\304\231trzak"]
-  s.date = %q{2010-08-04}
+  s.authors = ["Brady Bouchard", "Peter Jackson", "Cosmin Radoi", "Bence Nagy", "Rob Maddox", "Wojciech Wnętrzak"]
+  s.date = %q{2010-08-06}
   s.description = %q{ThumbsUp provides dead-simple voting capabilities to ActiveRecord models with karma calculation, a la stackoverflow.com.}
   s.email = %q{brady@ldawn.com}
   s.extra_rdoc_files = [

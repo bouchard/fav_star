@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{fav_star}
-  s.version = ""
+  s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Brady Bouchard"]
@@ -21,7 +21,14 @@ Gem::Specification.new do |s|
      "MIT-LICENSE",
      "README.markdown",
      "Rakefile",
-     "VERSION"
+     "VERSION",
+     "fav_star.gemspec",
+     "lib/acts_as_faveable.rb",
+     "lib/acts_as_faver.rb",
+     "lib/fav_star.rb",
+     "lib/generators/fav_star/fav_star_generator.rb",
+     "lib/generators/fav_star/templates/fave.rb",
+     "lib/generators/fav_star/templates/migration.rb"
   ]
   s.homepage = %q{http://github.com/brady8/favstar}
   s.rdoc_options = ["--charset=UTF-8"]

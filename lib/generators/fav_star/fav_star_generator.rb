@@ -1,6 +1,6 @@
 require 'rails/generators/active_record'
 
-class ThumbsUpGenerator < Rails::Generators::Base
+class FavStarGenerator < Rails::Generators::Base
 
   include Rails::Generators::Migration
 
@@ -17,11 +17,11 @@ class ThumbsUpGenerator < Rails::Generators::Base
   end
 
   def create_migration
-    migration_template 'migration.rb', File.join('db', 'migrate', 'thumbs_up_migration.rb')
+    migration_template 'migration.rb', File.join('db', 'migrate', 'fav_star_migration.rb')
   end
 
-  def move_vote_model
-    template 'vote.rb', File.join('app', 'models', 'vote.rb')
+  def move_fav_model
+    template 'fave.rb', File.join('app', 'models', 'fave.rb')
   end
 
 end

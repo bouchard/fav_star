@@ -7,9 +7,9 @@ class FavStarMigration < ActiveRecord::Migration
       t.timestamps
     end
 
-    add_index :votes, ["faver_id", "faver_type"],       :name => "fk_favers"
-    add_index :votes, ["faveable_id", "faveable_type"], :name => "fk_faveables"
-    add_index :votes, ["faver_id", "faver_type", "faveable_id", "faveable_type"], :unique => true, :name => "only_one_fav_per_user"
+    add_index :faves, ["faver_id", "faver_type"],       :name => "fk_favers"
+    add_index :faves, ["faveable_id", "faveable_type"], :name => "fk_faveables"
+    add_index :faves, ["faver_id", "faver_type", "faveable_id", "faveable_type"], :unique => true, :name => "only_one_fav_per_user"
 
   end
 

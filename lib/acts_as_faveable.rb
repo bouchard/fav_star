@@ -7,7 +7,7 @@ module FavStar
 
     module ClassMethods
       def acts_as_faveable
-        has_many :favs, :as => :faveable, :dependent => :nullify
+        has_many :faves, :as => :faveable, :dependent => :nullify
 
         include FavStar::ActsAsFaveable::InstanceMethods
         extend  FavStar::ActsAsFaveable::SingletonMethods
@@ -19,7 +19,7 @@ module FavStar
 
     module InstanceMethods
 
-      def favs
+      def faves
         Fave.where(:faveable_id => id, :faveable_type => self.class.name).count
       end
 

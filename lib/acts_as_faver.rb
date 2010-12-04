@@ -8,7 +8,7 @@ module FavStar #:nodoc:
     module ClassMethods
       def acts_as_faver
 
-        has_many :votes, :as => :faver, :dependent => :destroy
+        has_many :faves, :as => :faver, :dependent => :destroy
 
         include FavStar::ActsAsFaver::InstanceMethods
         extend  FavStar::ActsAsFaver::SingletonMethods

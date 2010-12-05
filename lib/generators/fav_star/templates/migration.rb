@@ -11,7 +11,7 @@ class FavStarMigration < ActiveRecord::Migration
     add_index :faves, [:faveable_id, :faveable_type]
     
     # Only one fave per user, per model.
-    add_index :faves, [:faver_id, :faver_type, :faveable_id, :faveable_type], :unique => true
+    add_index :faves, [:faver_id, :faver_type, :faveable_id, :faveable_type], :unique => true, :name => 'fk_one_fave_per_user_per_model'
 
   end
 
